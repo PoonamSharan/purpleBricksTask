@@ -1,0 +1,74 @@
+﻿@using System.Data
+@model OrangeBricks.Web.Controllers.Property.ViewModels.PropertiesViewModel
+
+@{
+    ViewBag.Title = "Properties For Sale";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+
+    DataSet ds = new DataSet();
+    int i = 0, j = 0, k = 0;
+    string[] str = new string[10];
+
+    //here we have used session to get dataset 
+    if (Session["ds"] != null)
+    {
+        ds = (DataSet)Session["ds"];
+    }
+}
+
+<h2>Properties For Sale</h2>
+
+@using (Html.BeginForm("Index", "Property", FormMethod.Get, new { @class = "form-horizontal" }))
+{
+    <div class="form-group form-group-lg">
+        @Html.LabelFor(x => x.Search, "Search:", new { @class = "col-sm-2 control-label" })
+        <div class="col-sm-8">
+            @Html.TextBoxFor(m => m.Search, new { @class = "form-control", @placeholder = "Search by street or description..." })
+        </div>
+        
+    <div class="col-sm-2">
+        <button type="submit" class="btn btn-default">Search</button>
+    </div>
+    </div>
+    
+}
+
+<p>@Model.Properties.Count properties matching your criteria...</p>
+
+ @foreach(DataRow dr in ds.Tables[0].Rows)
+ {
+
+     str[i] = dr["id"].ToString();
+     i++;
+ }
+
+
+@foreach (var property in Model.Properties)
+{
+
+    int id = Convert.ToInt32(str[j]);
+    //here we are comparing id  that is matching with property id 
+    // if it is then we can put message that offer has been accpeted.
+    if (id == property.Id)
+    {
+    <hr />
+    <h3>@property.StreetName</h3>
+    <p>@property.NumberOfBedrooms bedroom @property.PropertyType</p>
+    <p>@property.Description</p>
+    <p>Your Offer has been Accpeted by Seller Now Proceed Ahead!!!!!!!</p>
+
+    }
+    else
+    {
+        <hr />
+        <h3>@property.StreetName</h3>
+        <p>@property.NumberOfBedrooms bedroom @property.PropertyType</p>
+        <p>@property.Description</p>
+        <a href="@Url.Action("MakeOffer", "Property", new {id = property.Id})" class="btn btn-primary">
+            Make Offer
+        </a>
+    }
+j++;
+}
